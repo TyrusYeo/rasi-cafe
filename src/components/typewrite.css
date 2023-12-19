@@ -1,0 +1,17 @@
+.typewriter {
+    display: inline-block;
+    overflow: hidden;
+    border-right: 0.15em solid orange; /* Adjust the cursor color */
+    white-space: nowrap;
+    margin: 0;
+    animation: blink-caret 0.75s step-end infinite;
+  }
+  
+  @keyframes blink-caret {
+    from, to {
+      border-color: transparent;
+    }
+    50% {
+      border-color: orange;
+    }
+  }
