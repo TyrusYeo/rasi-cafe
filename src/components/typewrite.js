@@ -19,9 +19,9 @@ const Typewriter = () => {
       
       // Move to next string
       if (currCharCount === textArray[currentStringIndex % textArray.length].length + 1) {
-        setDisplayText("");
         currentStringIndex++;
         currCharCount = 0;
+        setDisplayText("");
       }
     }, 340);
 
