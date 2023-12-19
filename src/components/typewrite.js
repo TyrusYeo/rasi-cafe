@@ -1,9 +1,8 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import styles from './typewrite.css';
 
 const Typewriter = () => {
-  const textArray = ["welcome", "fix the lonliness epidemic", "join The Third Space"];
+  const textArray = ["welcome", "i want to fix the loneliness epidemic", "join The Third Space", "->"];
   const [displayText, setDisplayText] = useState("");
 
   useEffect(() => {
@@ -24,10 +23,11 @@ const Typewriter = () => {
         currentStringIndex++;
         currCharCount = 0;
       }
-    }, 450);
+    }, 340);
 
     return () => clearInterval(intervalId);
   }, []);
+
   return (
     <div className="wrapper">
       <span className="typewriter">{displayText}</span>

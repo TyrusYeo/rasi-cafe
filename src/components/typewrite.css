@@ -9,7 +9,6 @@
 .typewriter {
   font-family: 'Courier New', monospace; /* Use a typewriter font */
   font-size: 24px;
-  margin: 0 auto; /* Center the typewriter on the screen */
   white-space: nowrap; /* Prevent line breaks */
 }
 
