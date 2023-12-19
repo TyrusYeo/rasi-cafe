@@ -1,17 +1,54 @@
+.wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100vw;
+}
+
 .typewriter {
-    display: inline-block;
-    overflow: hidden;
-    border-right: 0.15em solid orange; /* Adjust the cursor color */
-    white-space: nowrap;
-    margin: 0;
-    animation: blink-caret 0.75s step-end infinite;
+  font-family: 'Courier New', monospace; /* Use a typewriter font */
+  font-size: 24px;
+  margin: 0 auto; /* Center the typewriter on the screen */
+  white-space: nowrap; /* Prevent line breaks */
+}
+
+/* Add a flicker animation for a more dynamic effect */
+@keyframes flicker {
+  0%, 100% {
+    opacity: 1;
   }
-  
-  @keyframes blink-caret {
-    from, to {
-      border-color: transparent;
-    }
-    50% {
-      border-color: orange;
-    }
+  50% {
+    opacity: 0.8;
   }
+}
+
+.cursor {
+  display: inline-block;
+  width: 2px;
+  background-color: #FFFFFF;
+  margin-left: 0.1rem;
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0% {
+      background-color: white;
+  }
+
+  49% {
+      background-color: white;
+  }
+
+  50% {
+      background-color: transparent;
+  }
+
+  99% {
+      background-color: transparent;
+  }
+
+  100% {
+      background-color: white;
+  }
+}

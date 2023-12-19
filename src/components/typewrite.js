@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import styles from './typewrite.css';
 
 const Typewriter = () => {
-  const textArray = ["welcome", "solve the lonliness epidemic", "join The Third Space"];
+  const textArray = ["welcome", "fix the lonliness epidemic", "join The Third Space"];
   const [displayText, setDisplayText] = useState("");
 
   useEffect(() => {
@@ -28,8 +28,12 @@ const Typewriter = () => {
 
     return () => clearInterval(intervalId);
   }, []);
-
-  return <span className={styles.typewriter}>{displayText}</span>;
+  return (
+    <div className="wrapper">
+      <span className="typewriter">{displayText}</span>
+      <span className="cursor">&nbsp;</span>
+    </div>
+  );
 };
 
 export default Typewriter;

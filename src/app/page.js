@@ -1,10 +1,9 @@
 import React from 'react';
 import Typewriter from '@/components/typewrite';
+import styles from './index.css';
 
 export default function Home() {
   return (
-    <h1>
-        <Typewriter />
-      </h1>
+        <Typewriter className="main"/>
   );
 }
