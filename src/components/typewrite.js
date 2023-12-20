@@ -1,5 +1,6 @@
 'use client';
 import React, { useState, useEffect } from 'react';
+import stlyes from './typewrite.css';
 
 const Typewriter = () => {
   const textArray = ["welcome", "i want to fix the loneliness epidemic", "join The Third Space", "->"];
