@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import stlyes from './typewrite.css';
 
 const Typewriter = () => {
-  const textArray = ["welcome", "i want to fix the loneliness epidemic", "join The Third Space", "->"];
+  const textArray = ["welcome", "i want to fix the loneliness epidemic", "join The Third Place", "->"];
   const [displayText, setDisplayText] = useState("");
 
   useEffect(() => {
