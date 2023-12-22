@@ -24,7 +24,7 @@ const Typewriter = () => {
         currCharCount = 0;
         setDisplayText("");
       }
-    }, 340);
+    }, 250);
 
     return () => clearInterval(intervalId);
   }, []);
