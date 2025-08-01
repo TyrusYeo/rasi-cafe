@@ -51,7 +51,7 @@ export default function AdminPage() {
   return (
     <div className="min-h-screen relative">
       <StarryBackground />
-      <div className="relative z-10 min-h-screen px-4 py-8">
+      <div className="relative z-10 min-h-screen px-4 py-8 pt-20">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold mb-2" style={{ color: 'var(--primary)' }}>

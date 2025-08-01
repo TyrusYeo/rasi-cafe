@@ -100,7 +100,7 @@ export default function Home() {
     return (
       <div className="min-h-screen relative">
         <StarryBackground />
-        <div className="relative z-10 flex items-center justify-center min-h-screen px-4">
+        <div className="relative z-10 flex items-center justify-center min-h-screen px-4 pt-16">
           <div className="w-full max-w-md text-center">
             <h2 className="text-2xl font-bold mb-4" style={{ color: 'var(--primary)' }}>
               Sit back, and grab a drink :)
@@ -139,7 +139,7 @@ export default function Home() {
     return (
       <div className="min-h-screen relative">
         <StarryBackground />
-        <div className="relative z-10 flex items-center justify-center min-h-screen px-4">
+        <div className="relative z-10 flex items-center justify-center min-h-screen px-4 pt-16">
           <div className="w-full max-w-md">
             <div className="zodiac-card">
               <h2 className="text-2xl font-bold mb-4 text-center" style={{ color: 'var(--primary)' }}>
@@ -168,7 +168,7 @@ export default function Home() {
   return (
     <div className="min-h-screen relative">
       <StarryBackground />
-      <div className="relative z-10 flex items-center justify-center min-h-screen px-4">
+      <div className="relative z-10 flex items-center justify-center min-h-screen px-4 pt-16">
         <div className="w-full max-w-md">
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold mb-2" style={{ color: 'var(--primary)' }}>

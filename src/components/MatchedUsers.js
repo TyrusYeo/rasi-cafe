@@ -82,64 +82,59 @@ const MatchedUsers = () => {
 
   if (!currentUser) {
     return (
-      <div className="min-h-screen relative">
-        <div className="relative z-10 flex items-center justify-center min-h-screen px-4">
-          <div className="w-full max-w-md text-center">
-            <h2 className="text-2xl font-bold mb-4" style={{ color: 'var(--primary)' }}>
-              Welcome Back
-            </h2>
-            <p className="mb-6 opacity-80">
-              Please enter your information to continue your cosmic journey.
-            </p>
-            <button
-              onClick={() => window.location.href = '/'}
-              className="btn-primary"
-            >
-              Start Over
-            </button>
-          </div>
+      <div className="flex items-center justify-center min-h-screen px-4">
+        <div className="w-full max-w-md text-center">
+          <h2 className="text-2xl font-bold mb-4" style={{ color: 'var(--primary)' }}>
+            Welcome Back
+          </h2>
+          <p className="mb-6 opacity-80">
+            Please enter your information!
+          </p>
+          <button
+            onClick={() => window.location.href = '/'}
+            className="btn-primary"
+          >
+            Start Over
+          </button>
         </div>
       </div>
     );
   }
-  console.log(currentUser);
+
   if (!currentUser.matched) {
     return (
-      <div className="min-h-screen relative">
-        <StarryBackground />
-        <div className="relative z-10 flex items-center justify-center min-h-screen px-4">
-          <div className="w-full max-w-md">
-            <div className="zodiac-card">
-              <h2 className="text-2xl font-bold mb-4 text-center" style={{ color: 'var(--primary)' }}>
-                Welcome to Rasi Cafe :)
-              </h2>
-              <h2 className="text-2xl font-bold mb-4 text-center" style={{ color: 'var(--primary)' }}>
-              {currentUser.fullName}
-              </h2>
-              <div className="text-4xl mb-4 text-center" style={{ color: 'var(--royal-blue)' }}>
-                {currentUser.zodiacSign}
+      <div className="flex items-center justify-center min-h-screen px-4">
+        <div className="w-full max-w-md">
+          <div className="zodiac-card">
+            <h2 className="text-2xl font-bold mb-4 text-center" style={{ color: 'var(--primary)' }}>
+              Welcome to Rasi Cafe :)
+            </h2>
+            <h2 className="text-2xl font-bold mb-4 text-center" style={{ color: 'var(--primary)' }}>
+            {currentUser.fullName}
+            </h2>
+            <div className="text-4xl mb-4 text-center" style={{ color: 'var(--royal-blue)' }}>
+              {currentUser.zodiacSign}
+            </div>
+            <div className="text-center">
+              <div className="inline-block animate-pulse">
+                <div className="w-4 h-4 bg-primary rounded-full mx-1 inline-block"></div>
+                <div className="w-4 h-4 bg-primary rounded-full mx-1 inline-block" style={{ animationDelay: '0.2s' }}></div>
+                <div className="w-4 h-4 bg-primary rounded-full mx-1 inline-block" style={{ animationDelay: '0.4s' }}></div>
               </div>
-              <div className="text-center">
-                <div className="inline-block animate-pulse">
-                  <div className="w-4 h-4 bg-primary rounded-full mx-1 inline-block"></div>
-                  <div className="w-4 h-4 bg-primary rounded-full mx-1 inline-block" style={{ animationDelay: '0.2s' }}></div>
-                  <div className="w-4 h-4 bg-primary rounded-full mx-1 inline-block" style={{ animationDelay: '0.4s' }}></div>
-                </div>
-              </div>
-              <div className="mt-6 flex space-x-3">
-                <button
-                  onClick={handleLogout}
-                  className="btn-secondary flex-1"
-                >
-                  Logout
-                </button>
-                <button
-                  onClick={() => window.location.reload()}
-                  className="btn-secondary flex-1"
-                >
-                  Refresh
-                </button>
-              </div>
+            </div>
+            <div className="mt-6 flex space-x-3">
+              <button
+                onClick={handleLogout}
+                className="btn-secondary flex-1"
+              >
+                Logout
+              </button>
+              <button
+                onClick={() => window.location.reload()}
+                className="btn-secondary flex-1"
+              >
+                Refresh
+              </button>
             </div>
           </div>
         </div>
@@ -168,63 +163,61 @@ const MatchedUsers = () => {
   const isGroupMatch = matchedUsersList.length > 1;
 
   return (
-    <div className="min-h-screen relative">
-      <div className="relative z-10 flex items-center justify-center min-h-screen px-4">
-        <div className="w-full max-w-md">
-          <div className="zodiac-card">
-            <h2 className="text-2xl font-bold mb-4 text-center" style={{ color: 'var(--primary)' }}>
-              {isGroupMatch ? 'Group match found!!!' : 'Match found!!!'}
-            </h2>
-            
-            <div className="text-center mb-6">
-              <div className="text-lg mb-2">
-                <span className="font-semibold">{currentUser.fullName}</span> ({currentUser.zodiacSign})
-              </div>
-              <div className="text-2xl mb-2" style={{ color: 'var(--royal-blue)' }}>
-                +
-              </div>
-              {isGroupMatch ? (
-                <div className="text-lg space-y-2">
-                  {matchedUsersList.map((user, index) => (
-                    <div key={user.id} className="flex flex-col items-center">
-                      <span className="font-semibold">{user.fullName}</span>
-                      <span className="text-sm opacity-80">({user.zodiacSign})</span>
-                      {index < matchedUsersList.length - 1 && (
-                        <div className="text-lg my-2" style={{ color: 'var(--royal-blue)' }}>
-                          +
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-lg">
-                  <span className="font-semibold">{matchedUsersList[0]?.fullName}</span> ({matchedUsersList[0]?.zodiacSign})
-                </div>
-              )}
+    <div className="flex items-center justify-center min-h-screen px-4">
+      <div className="w-full max-w-md">
+        <div className="zodiac-card">
+          <h2 className="text-2xl font-bold mb-4 text-center" style={{ color: 'var(--primary)' }}>
+            {isGroupMatch ? 'Group match found!!!' : 'Match found!!!'}
+          </h2>
+          
+          <div className="text-center mb-6">
+            <div className="text-lg mb-2">
+              <span className="font-semibold">{currentUser.fullName}</span> ({currentUser.zodiacSign})
             </div>
-
-            <div className="match-code mb-6">
-              <div className="text-sm mb-2 opacity-80">Your Unique Match Code:</div>
-              <div className="text-lg font-bold">
-                {currentUser.matchCode}
-              </div>
+            <div className="text-2xl mb-2" style={{ color: 'var(--royal-blue)' }}>
+              +
             </div>
-
-            <p className="text-center mb-6 opacity-80">
-              {isGroupMatch 
-                ? `Use this code to find your group in the crowd! 🌟 (${matchedUsersList.length + 1} people total)`
-                : 'Use this code to find each other in the crowd! 🌟'
-              }
-            </p>
-
-            <button
-              onClick={handleLogout}
-              className="btn-secondary w-full"
-            >
-              Logout
-            </button>
+            {isGroupMatch ? (
+              <div className="text-lg space-y-2">
+                {matchedUsersList.map((user, index) => (
+                  <div key={user.id} className="flex flex-col items-center">
+                    <span className="font-semibold">{user.fullName}</span>
+                    <span className="text-sm opacity-80">({user.zodiacSign})</span>
+                    {index < matchedUsersList.length - 1 && (
+                      <div className="text-lg my-2" style={{ color: 'var(--royal-blue)' }}>
+                        +
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-lg">
+                <span className="font-semibold">{matchedUsersList[0]?.fullName}</span> ({matchedUsersList[0]?.zodiacSign})
+              </div>
+            )}
           </div>
+
+          <div className="match-code mb-6">
+            <div className="text-sm mb-2 opacity-80">Your Unique Match Code:</div>
+            <div className="text-lg font-bold">
+              {currentUser.matchCode}
+            </div>
+          </div>
+
+          <p className="text-center mb-6 opacity-80">
+            {isGroupMatch 
+              ? `Use this code to find your group in the crowd! 🌟 (${matchedUsersList.length + 1} people total)`
+              : 'Use this code to find each other in the crowd! 🌟'
+            }
+          </p>
+
+          <button
+            onClick={handleLogout}
+            className="btn-secondary w-full"
+          >
+            Logout
+          </button>
         </div>
       </div>
     </div>
