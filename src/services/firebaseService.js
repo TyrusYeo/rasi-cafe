@@ -13,8 +13,17 @@ import { db } from '@/config/firebase';
 
 const USERS_COLLECTION = 'users';
 
+// Helper function to check if Firebase is available
+const isFirebaseAvailable = () => {
+  return typeof window !== 'undefined' && db;
+};
+
 // Add a new user
 export const addUser = async (userData) => {
+  if (!isFirebaseAvailable()) {
+    throw new Error('Firebase is not available');
+  }
+  
   try {
     const docRef = await addDoc(collection(db, USERS_COLLECTION), {
       ...userData,
@@ -33,6 +42,10 @@ export const addUser = async (userData) => {
 
 // Get all active users
 export const getActiveUsers = async () => {
+  if (!isFirebaseAvailable()) {
+    return [];
+  }
+  
   try {
     const q = query(
       collection(db, USERS_COLLECTION),
@@ -53,6 +66,10 @@ export const getActiveUsers = async () => {
 
 // Get all users (for admin)
 export const getAllUsers = async () => {
+  if (!isFirebaseAvailable()) {
+    return [];
+  }
+  
   try {
     const q = query(
       collection(db, USERS_COLLECTION),
@@ -72,6 +89,10 @@ export const getAllUsers = async () => {
 
 // Update user status to inactive (logout)
 export const logoutUser = async (userId) => {
+  if (!isFirebaseAvailable()) {
+    throw new Error('Firebase is not available');
+  }
+  
   try {
     const userRef = doc(db, USERS_COLLECTION, userId);
     await updateDoc(userRef, {
@@ -85,6 +106,10 @@ export const logoutUser = async (userId) => {
 
 // Update user match information
 export const updateUserMatch = async (userId, matchData) => {
+  if (!isFirebaseAvailable()) {
+    throw new Error('Firebase is not available');
+  }
+  
   try {
     const userRef = doc(db, USERS_COLLECTION, userId);
     await updateDoc(userRef, {
@@ -100,6 +125,10 @@ export const updateUserMatch = async (userId, matchData) => {
 
 // Get user by ID
 export const getUserById = async (userId) => {
+  if (!isFirebaseAvailable()) {
+    return null;
+  }
+  
   try {
     const q = query(
       collection(db, USERS_COLLECTION),
@@ -119,6 +148,15 @@ export const getUserById = async (userId) => {
 
 // Get user statistics
 export const getUserStats = async () => {
+  if (!isFirebaseAvailable()) {
+    return {
+      total: 0,
+      active: 0,
+      matched: 0,
+      inactive: 0
+    };
+  }
+  
   try {
     const allUsers = await getAllUsers();
     const stats = {

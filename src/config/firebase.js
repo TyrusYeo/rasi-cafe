@@ -5,20 +5,23 @@ import { getFirestore } from "firebase/firestore";
 // https://firebase.google.com/docs/web/setup#available-libraries
 
 // Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: "AIzaSyC9A76So7Adh6HOliU-FxtqJCpK7B1vl8E",
   authDomain: "rasi-b9f56.firebaseapp.com",
   projectId: "rasi-b9f56",
   storageBucket: "rasi-b9f56.firebasestorage.app",
   messagingSenderId: "1028620210488",
-  appId: "1:1028620210488:web:0d70c9ef14ca28f862f1cd",
-  measurementId: "G-CVE300LVKS"
+  appId: "1:1028620210488:web:0d70c9ef14ca28f862f1cd"
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
+// Initialize Firebase only on the client side
+let app;
+let db;
 
-export const db = getFirestore(app);
+if (typeof window !== 'undefined') {
+  app = initializeApp(firebaseConfig);
+  db = getFirestore(app);
+}
 
+export { db };
 export default app; 
