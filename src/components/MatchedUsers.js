@@ -7,14 +7,46 @@ const MatchedUsers = () => {
   const [matchedUsers, setMatchedUsers] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
 
+  // Function to update localStorage with current user data
+  const updateLocalStorage = (user) => {
+    if (user) {
+      localStorage.setItem('userData', JSON.stringify(user));
+      localStorage.setItem('currentUserId', user.id);
+    } else {
+      localStorage.removeItem('userData');
+      localStorage.removeItem('currentUserId');
+    }
+  };
+
   useEffect(() => {
     const loadUserData = async () => {
       try {
-        // Get current user from localStorage
-        const userData = localStorage.getItem('userData');
-        if (userData) {
-          const user = JSON.parse(userData);
-          setCurrentUser(user);
+        // Get current user ID from localStorage
+        const currentUserId = localStorage.getItem('currentUserId');
+        if (currentUserId) {
+          // Try to fetch complete user data from Firebase first
+          try {
+            const user = await getUserById(currentUserId);
+            if (user) {
+              setCurrentUser(user);
+              // Store complete user data in localStorage for session persistence
+              updateLocalStorage(user);
+            } else {
+              // User not found in Firebase, clear localStorage
+              updateLocalStorage(null);
+            }
+          } catch (firebaseError) {
+            // If Firebase is unavailable, try to use localStorage as fallback
+            console.warn('Firebase unavailable, using localStorage fallback:', firebaseError);
+            const userData = localStorage.getItem('userData');
+            if (userData) {
+              const user = JSON.parse(userData);
+              setCurrentUser(user);
+            } else {
+              // No fallback data available
+              updateLocalStorage(null);
+            }
+          }
         }
 
         // Get all matched users from Firebase
@@ -23,6 +55,9 @@ const MatchedUsers = () => {
         setMatchedUsers(matchedUsers);
       } catch (error) {
         console.error('Error loading user data:', error);
+        // If there's an error, clear localStorage and redirect to home
+        updateLocalStorage(null);
+        setCurrentUser(null);
       }
     };
 
@@ -36,8 +71,7 @@ const MatchedUsers = () => {
         await logoutUser(currentUser.id);
         
         // Clear current user data from localStorage
-        localStorage.removeItem('userData');
-        localStorage.removeItem('currentUserId');
+        updateLocalStorage(null);
         setCurrentUser(null);
       } catch (error) {
         console.error('Error logging out:', error);
@@ -68,7 +102,7 @@ const MatchedUsers = () => {
       </div>
     );
   }
-
+  console.log(currentUser);
   if (!currentUser.matched) {
     return (
       <div className="min-h-screen relative">
@@ -124,7 +158,7 @@ const MatchedUsers = () => {
         <div className="w-full max-w-md">
           <div className="zodiac-card">
             <h2 className="text-2xl font-bold mb-4 text-center" style={{ color: 'var(--primary)' }}>
-              Cosmic Match Found! ✨
+              Match found!!!
             </h2>
             
             <div className="text-center mb-6">

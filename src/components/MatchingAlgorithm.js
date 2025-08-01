@@ -9,10 +9,11 @@ const MatchingAlgorithm = () => {
 
   const runMatchingAlgorithm = async () => {
     setIsRunning(true);
-    
+    console.log('Running matching algorithm');
     try {
       // Get all active users from Firebase
       const allUsers = await getActiveUsers();
+      console.log(allUsers);
       const unmatchedUsers = allUsers.filter(user => !user.matched);
 
       // Simple matching algorithm

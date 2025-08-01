@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import StarryBackground from '@/components/StarryBackground';
 import { getZodiacSign, monthNames, generateDays } from '@/utils/zodiac';
-import { addUser } from '@/services/firebaseService';
+import { addUser, getUserById } from '@/services/firebaseService';
 
 export default function Home() {
   const [formData, setFormData] = useState({
@@ -16,11 +16,47 @@ export default function Home() {
 
   // Check for existing user on component mount
   useEffect(() => {
-    const userData = localStorage.getItem('userData');
-    if (userData) {
-      const user = JSON.parse(userData);
-      setExistingUser(user);
-    }
+    const loadExistingUser = async () => {
+      try {
+        const currentUserId = localStorage.getItem('currentUserId');
+        if (currentUserId) {
+          // Try to fetch complete user data from Firebase first
+          try {
+            const user = await getUserById(currentUserId);
+            if (user) {
+              setExistingUser(user);
+              // Store complete user data in localStorage for session persistence
+              localStorage.setItem('userData', JSON.stringify(user));
+            } else {
+              // User not found in Firebase, clear localStorage
+              localStorage.removeItem('userData');
+              localStorage.removeItem('currentUserId');
+              setExistingUser(null);
+            }
+          } catch (firebaseError) {
+            // If Firebase is unavailable, try to use localStorage as fallback
+            console.warn('Firebase unavailable, using localStorage fallback:', firebaseError);
+            const userData = localStorage.getItem('userData');
+            if (userData) {
+              const user = JSON.parse(userData);
+              setExistingUser(user);
+            } else {
+              // No fallback data available
+              localStorage.removeItem('currentUserId');
+              setExistingUser(null);
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Error loading existing user:', error);
+        // If there's an error, clear localStorage
+        localStorage.removeItem('userData');
+        localStorage.removeItem('currentUserId');
+        setExistingUser(null);
+      }
+    };
+
+    loadExistingUser();
   }, []);
 
   const handleInputChange = (e) => {
@@ -49,7 +85,7 @@ export default function Home() {
         
         const savedUser = await addUser(userData);
         
-        // Store user ID in localStorage for session management
+        // Store complete user data from Firebase in localStorage for session management
         localStorage.setItem('currentUserId', savedUser.id);
         localStorage.setItem('userData', JSON.stringify(savedUser));
       } catch (error) {
@@ -85,6 +121,7 @@ export default function Home() {
               <button
                 onClick={() => {
                   localStorage.removeItem('userData');
+                  localStorage.removeItem('currentUserId');
                   setExistingUser(null);
                 }}
                 className="btn-secondary w-full"
@@ -205,7 +242,7 @@ export default function Home() {
               className="btn-primary w-full"
               disabled={!formData.fullName || !formData.birthMonth || !formData.birthDay}
             >
-              Connect! ✨
+              Connect the stars ✨
             </button>
           </form>
           

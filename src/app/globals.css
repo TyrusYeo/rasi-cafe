@@ -3,7 +3,8 @@
 @tailwind utilities;
 
 :root {
-  --primary: #a7988f;
+  --primary: #c2bebc;
+  --star: #a7988f;
   --royal-blue: #4169E1;
   --olive-green: #808000;
   --deep-space: #0B1426;
@@ -31,7 +32,7 @@ body {
 
 .star {
   position: absolute;
-  background: var(--primary);
+  background: var(--star);
   border-radius: 50%;
   animation: twinkle 3s infinite, float 6s infinite;
 }

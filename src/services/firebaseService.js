@@ -4,10 +4,8 @@ import {
   getDocs, 
   updateDoc, 
   doc, 
-  query, 
-  where,
-  orderBy,
-  limit
+  query,
+  getDoc
 } from 'firebase/firestore';
 import { db } from '@/config/firebase';
 
@@ -47,16 +45,21 @@ export const getActiveUsers = async () => {
   }
   
   try {
+    // First get all users, then filter and sort in memory to avoid index requirement
     const q = query(
-      collection(db, USERS_COLLECTION),
-      where('status', '==', 'active'),
-      orderBy('createdAt', 'desc')
+      collection(db, USERS_COLLECTION)
     );
     const querySnapshot = await getDocs(q);
     const users = [];
     querySnapshot.forEach((doc) => {
-      users.push({ id: doc.id, ...doc.data() });
+      const userData = { id: doc.id, ...doc.data() };
+      // Filter for active users only
+      if (userData.status === 'active') {
+        users.push(userData);
+      }
     });
+    // Sort by createdAt in descending order
+    users.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     return users;
   } catch (error) {
     console.error('Error getting active users:', error);
@@ -72,14 +75,15 @@ export const getAllUsers = async () => {
   
   try {
     const q = query(
-      collection(db, USERS_COLLECTION),
-      orderBy('createdAt', 'desc')
+      collection(db, USERS_COLLECTION)
     );
     const querySnapshot = await getDocs(q);
     const users = [];
     querySnapshot.forEach((doc) => {
       users.push({ id: doc.id, ...doc.data() });
     });
+    // Sort by createdAt in descending order
+    users.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     return users;
   } catch (error) {
     console.error('Error getting all users:', error);
@@ -130,14 +134,11 @@ export const getUserById = async (userId) => {
   }
   
   try {
-    const q = query(
-      collection(db, USERS_COLLECTION),
-      where('__name__', '==', userId)
-    );
-    const querySnapshot = await getDocs(q);
-    if (!querySnapshot.empty) {
-      const doc = querySnapshot.docs[0];
-      return { id: doc.id, ...doc.data() };
+    const userRef = doc(db, USERS_COLLECTION, userId);
+    const userSnap = await getDoc(userRef);
+    
+    if (userSnap.exists()) {
+      return { id: userSnap.id, ...userSnap.data() };
     }
     return null;
   } catch (error) {
