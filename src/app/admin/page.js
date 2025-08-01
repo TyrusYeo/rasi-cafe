@@ -12,8 +12,11 @@ export default function AdminPage() {
     inactive: 0
   });
 
+  const [recentUsers, setRecentUsers] = useState([]);
+
   useEffect(() => {
     updateStats();
+    loadRecentUsers();
   }, []);
 
   const updateStats = async () => {
@@ -22,6 +25,15 @@ export default function AdminPage() {
       setUserStats(stats);
     } catch (error) {
       console.error('Error updating stats:', error);
+    }
+  };
+
+  const loadRecentUsers = async () => {
+    try {
+      const users = await getAllUsers();
+      setRecentUsers(users.slice(0, 10));
+    } catch (error) {
+      console.error('Error loading recent users:', error);
     }
   };
 
@@ -118,46 +130,30 @@ export default function AdminPage() {
               </h3>
               
               <div className="space-y-2 max-h-64 overflow-y-auto">
-                {(() => {
-                  const [recentUsers, setRecentUsers] = useState([]);
-                  
-                  useEffect(() => {
-                    const loadRecentUsers = async () => {
-                      try {
-                        const users = await getAllUsers();
-                        setRecentUsers(users.slice(0, 10));
-                      } catch (error) {
-                        console.error('Error loading recent users:', error);
-                      }
-                    };
-                    loadRecentUsers();
-                  }, []);
-                  
-                  return recentUsers.map((user, index) => (
-                    <div key={user.id || index} className="flex justify-between items-center p-2 bg-white bg-opacity-5 rounded">
-                      <div>
-                        <span className="font-medium">{user.fullName}</span>
-                        <span className="text-sm opacity-60 ml-2">
-                          ({user.zodiacSign}) - {user.birthMonth}/{user.birthDay}
-                        </span>
-                      </div>
-                      <div className="text-sm">
-                        <span className={`px-2 py-1 rounded ${
-                          user.status === 'active' ? 'bg-green-500 bg-opacity-20 text-green-300' :
-                          user.status === 'inactive' ? 'bg-red-500 bg-opacity-20 text-red-300' :
-                          'bg-gray-500 bg-opacity-20 text-gray-300'
-                        }`}>
-                          {user.status}
-                        </span>
-                        {user.matched && (
-                          <span className="ml-2 px-2 py-1 rounded bg-blue-500 bg-opacity-20 text-blue-300">
-                            matched
-                          </span>
-                        )}
-                      </div>
+                {recentUsers.map((user, index) => (
+                  <div key={user.id || index} className="flex justify-between items-center p-2 bg-white bg-opacity-5 rounded">
+                    <div>
+                      <span className="font-medium">{user.fullName}</span>
+                      <span className="text-sm opacity-60 ml-2">
+                        ({user.zodiacSign}) - {user.birthMonth}/{user.birthDay}
+                      </span>
                     </div>
-                  ));
-                })()}
+                    <div className="text-sm">
+                      <span className={`px-2 py-1 rounded ${
+                        user.status === 'active' ? 'bg-green-500 bg-opacity-20 text-green-300' :
+                        user.status === 'inactive' ? 'bg-red-500 bg-opacity-20 text-red-300' :
+                        'bg-gray-500 bg-opacity-20 text-gray-300'
+                      }`}>
+                        {user.status}
+                      </span>
+                      {user.matched && (
+                        <span className="ml-2 px-2 py-1 rounded bg-blue-500 bg-opacity-20 text-blue-300">
+                          matched
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
