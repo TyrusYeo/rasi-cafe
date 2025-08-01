@@ -1,0 +1,166 @@
+'use client';
+import React, { useState, useEffect } from 'react';
+import { getUserById, logoutUser, getAllUsers } from '@/services/firebaseService';
+import StarryBackground from '@/components/StarryBackground';
+
+const MatchedUsers = () => {
+  const [matchedUsers, setMatchedUsers] = useState([]);
+  const [currentUser, setCurrentUser] = useState(null);
+
+  useEffect(() => {
+    const loadUserData = async () => {
+      try {
+        // Get current user from localStorage
+        const userData = localStorage.getItem('userData');
+        if (userData) {
+          const user = JSON.parse(userData);
+          setCurrentUser(user);
+        }
+
+        // Get all matched users from Firebase
+        const allUsers = await getAllUsers();
+        const matchedUsers = allUsers.filter(user => user.matched && user.matchCode);
+        setMatchedUsers(matchedUsers);
+      } catch (error) {
+        console.error('Error loading user data:', error);
+      }
+    };
+
+    loadUserData();
+  }, []);
+
+  const handleLogout = async () => {
+    if (currentUser) {
+      try {
+        // Update user status to inactive in Firebase
+        await logoutUser(currentUser.id);
+        
+        // Clear current user data from localStorage
+        localStorage.removeItem('userData');
+        localStorage.removeItem('currentUserId');
+        setCurrentUser(null);
+      } catch (error) {
+        console.error('Error logging out:', error);
+        alert('Error logging out. Please try again.');
+      }
+    }
+  };
+
+  if (!currentUser) {
+    return (
+      <div className="min-h-screen relative">
+        <div className="relative z-10 flex items-center justify-center min-h-screen px-4">
+          <div className="w-full max-w-md text-center">
+            <h2 className="text-2xl font-bold mb-4" style={{ color: 'var(--primary)' }}>
+              Welcome Back
+            </h2>
+            <p className="mb-6 opacity-80">
+              Please enter your information to continue your cosmic journey.
+            </p>
+            <button
+              onClick={() => window.location.href = '/'}
+              className="btn-primary"
+            >
+              Start Over
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!currentUser.matched) {
+    return (
+      <div className="min-h-screen relative">
+        <StarryBackground />
+        <div className="relative z-10 flex items-center justify-center min-h-screen px-4">
+          <div className="w-full max-w-md">
+            <div className="zodiac-card">
+              <h2 className="text-2xl font-bold mb-4 text-center" style={{ color: 'var(--primary)' }}>
+                Welcome to Rasi Cafe :)
+              </h2>
+              <h2 className="text-2xl font-bold mb-4 text-center" style={{ color: 'var(--primary)' }}>
+              {currentUser.fullName}
+              </h2>
+              <div className="text-4xl mb-4 text-center" style={{ color: 'var(--royal-blue)' }}>
+                {currentUser.zodiacSign}
+              </div>
+              <div className="text-center">
+                <div className="inline-block animate-pulse">
+                  <div className="w-4 h-4 bg-primary rounded-full mx-1 inline-block"></div>
+                  <div className="w-4 h-4 bg-primary rounded-full mx-1 inline-block" style={{ animationDelay: '0.2s' }}></div>
+                  <div className="w-4 h-4 bg-primary rounded-full mx-1 inline-block" style={{ animationDelay: '0.4s' }}></div>
+                </div>
+              </div>
+              <div className="mt-6 flex space-x-3">
+                <button
+                  onClick={handleLogout}
+                  className="btn-secondary flex-1"
+                >
+                  Logout
+                </button>
+                <button
+                  onClick={() => window.location.reload()}
+                  className="btn-secondary flex-1"
+                >
+                  Refresh
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Find the matched user
+  const matchedUser = matchedUsers.find(user => 
+    user.id === currentUser.matchedWith || user.matchedWith === currentUser.id
+  );
+
+  return (
+    <div className="min-h-screen relative">
+      <div className="relative z-10 flex items-center justify-center min-h-screen px-4">
+        <div className="w-full max-w-md">
+          <div className="zodiac-card">
+            <h2 className="text-2xl font-bold mb-4 text-center" style={{ color: 'var(--primary)' }}>
+              Cosmic Match Found! ✨
+            </h2>
+            
+            <div className="text-center mb-6">
+              <div className="text-lg mb-2">
+                <span className="font-semibold">{currentUser.fullName}</span> ({currentUser.zodiacSign})
+              </div>
+              <div className="text-2xl mb-2" style={{ color: 'var(--royal-blue)' }}>
+                +
+              </div>
+              <div className="text-lg">
+                <span className="font-semibold">{matchedUser?.fullName}</span> ({matchedUser?.zodiacSign})
+              </div>
+            </div>
+
+            <div className="match-code mb-6">
+              <div className="text-sm mb-2 opacity-80">Your Unique Match Code:</div>
+              <div className="text-lg font-bold">
+                {currentUser.matchCode}
+              </div>
+            </div>
+
+            <p className="text-center mb-6 opacity-80">
+              Use this code to find each other in the crowd! 🌟
+            </p>
+
+            <button
+              onClick={handleLogout}
+              className="btn-secondary w-full"
+            >
+              Logout
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default MatchedUsers; 

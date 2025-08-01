@@ -3,26 +3,165 @@
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
+  --primary: #a7988f;
+  --royal-blue: #4169E1;
+  --olive-green: #808000;
+  --deep-space: #0B1426;
+  --starry-night: #1d296a;
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
-  margin: 0;
+  background: linear-gradient(135deg, var(--deep-space) 0%, var(--starry-night) 100%);
+  color: white;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Animated stars */
+@keyframes twinkle {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.2); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+.star {
+  position: absolute;
+  background: var(--primary);
+  border-radius: 50%;
+  animation: twinkle 3s infinite, float 6s infinite;
+}
+
+.star:nth-child(odd) {
+  animation-delay: 0s, 0s;
+}
+
+.star:nth-child(even) {
+  animation-delay: 1.5s, 3s;
+}
+
+/* Form styles */
+.form-input {
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid var(--primary);
+  border-radius: 12px;
+  color: white;
+  padding: 16px;
+  font-size: 16px;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--royal-blue);
+  box-shadow: 0 0 20px rgba(65, 105, 225, 0.3);
+}
+
+.form-input::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* Button styles */
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary) 0%, #B8860B 100%);
+  color: var(--deep-space);
+  border: none;
+  border-radius: 12px;
+  padding: 16px 32px;
+  font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
+}
+
+.btn-secondary {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: 2px solid var(--primary);
+  border-radius: 12px;
+  padding: 12px 24px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+  background: rgba(212, 175, 55, 0.1);
+  border-color: var(--royal-blue);
+}
+
+/* Zodiac card styles */
+.zodiac-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px solid var(--primary);
+  border-radius: 16px;
+  padding: 24px;
+  backdrop-filter: blur(10px);
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.zodiac-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(212, 175, 55, 0.2);
+}
+
+/* Match code styles */
+.match-code {
+  background: linear-gradient(135deg, var(--royal-blue) 0%, var(--olive-green) 100%);
+  color: white;
+  padding: 20px;
+  border-radius: 16px;
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+  letter-spacing: 2px;
+  text-align: center;
+  box-shadow: 0 8px 25px rgba(65, 105, 225, 0.3);
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+  .form-input {
+    padding: 14px;
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+  
+  .btn-primary {
+    padding: 14px 28px;
+    font-size: 16px;
+  }
+  
+  .btn-secondary {
+    padding: 10px 20px;
+    font-size: 16px;
+  }
+  
+  .zodiac-card {
+    padding: 20px;
+  }
+  
+  /* Prevent horizontal scroll on mobile */
+  body {
+    overflow-x: hidden;
+  }
+  
+  /* Better touch targets */
+  button {
+    min-height: 44px;
+  }
+  
+  select, input {
+    min-height: 44px;
+  }
 }
