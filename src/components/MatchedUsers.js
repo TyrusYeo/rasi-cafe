@@ -147,10 +147,25 @@ const MatchedUsers = () => {
     );
   }
 
-  // Find the matched user
-  const matchedUser = matchedUsers.find(user => 
-    user.id === currentUser.matchedWith || user.matchedWith === currentUser.id
-  );
+  // Find the matched user(s)
+  const getMatchedUsers = () => {
+    if (!currentUser.matchedWith) return [];
+    
+    // Check if it's a group match (comma-separated IDs)
+    if (currentUser.matchedWith.includes(',')) {
+      const matchedIds = currentUser.matchedWith.split(',');
+      return matchedUsers.filter(user => matchedIds.includes(user.id));
+    } else {
+      // Single pair match
+      const matchedUser = matchedUsers.find(user => 
+        user.id === currentUser.matchedWith || user.matchedWith === currentUser.id
+      );
+      return matchedUser ? [matchedUser] : [];
+    }
+  };
+
+  const matchedUsersList = getMatchedUsers();
+  const isGroupMatch = matchedUsersList.length > 1;
 
   return (
     <div className="min-h-screen relative">
@@ -158,7 +173,7 @@ const MatchedUsers = () => {
         <div className="w-full max-w-md">
           <div className="zodiac-card">
             <h2 className="text-2xl font-bold mb-4 text-center" style={{ color: 'var(--primary)' }}>
-              Match found!!!
+              {isGroupMatch ? 'Group match found!!!' : 'Match found!!!'}
             </h2>
             
             <div className="text-center mb-6">
@@ -168,9 +183,25 @@ const MatchedUsers = () => {
               <div className="text-2xl mb-2" style={{ color: 'var(--royal-blue)' }}>
                 +
               </div>
-              <div className="text-lg">
-                <span className="font-semibold">{matchedUser?.fullName}</span> ({matchedUser?.zodiacSign})
-              </div>
+              {isGroupMatch ? (
+                <div className="text-lg space-y-2">
+                  {matchedUsersList.map((user, index) => (
+                    <div key={user.id} className="flex flex-col items-center">
+                      <span className="font-semibold">{user.fullName}</span>
+                      <span className="text-sm opacity-80">({user.zodiacSign})</span>
+                      {index < matchedUsersList.length - 1 && (
+                        <div className="text-lg my-2" style={{ color: 'var(--royal-blue)' }}>
+                          +
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-lg">
+                  <span className="font-semibold">{matchedUsersList[0]?.fullName}</span> ({matchedUsersList[0]?.zodiacSign})
+                </div>
+              )}
             </div>
 
             <div className="match-code mb-6">
@@ -181,7 +212,10 @@ const MatchedUsers = () => {
             </div>
 
             <p className="text-center mb-6 opacity-80">
-              Use this code to find each other in the crowd! 🌟
+              {isGroupMatch 
+                ? `Use this code to find your group in the crowd! 🌟 (${matchedUsersList.length + 1} people total)`
+                : 'Use this code to find each other in the crowd! 🌟'
+              }
             </p>
 
             <button

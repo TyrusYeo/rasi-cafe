@@ -95,9 +95,10 @@ export const areCompatible = (sign1, sign2) => {
 };
 
 // Generate unique match code
-export const generateMatchCode = (sign1, sign2) => {
+export const generateMatchCode = (...signs) => {
   const randomChars = Math.random().toString(36).substring(2, 7).toUpperCase();
-  return `${sign1}-${sign2}-${randomChars}`;
+  const signsString = signs.join('-');
+  return `${signsString}-${randomChars}`;
 };
 
 // Month names for dropdown
