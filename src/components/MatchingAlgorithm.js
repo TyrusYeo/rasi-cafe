@@ -21,62 +21,77 @@ const MatchingAlgorithm = () => {
       const groups = [];
 
       // Phase 1: Try to match compatible pairs
+      const compatiblePairs = [];
+      
+      // Find all compatible pairs first
       for (let i = 0; i < unmatchedUsers.length; i++) {
         if (matchedUsers.has(unmatchedUsers[i].id)) continue;
-
+        
         for (let j = i + 1; j < unmatchedUsers.length; j++) {
           if (matchedUsers.has(unmatchedUsers[j].id)) continue;
-
+          
           const user1 = unmatchedUsers[i];
           const user2 = unmatchedUsers[j];
-
+          
           if (areCompatible(user1.zodiacSign, user2.zodiacSign)) {
-            const matchCode = generateMatchCode(user1.zodiacSign, user2.zodiacSign);
-            
-            matches.push({
-              user1: {
-                id: user1.id,
-                name: user1.fullName,
-                sign: user1.zodiacSign
-              },
-              user2: {
-                id: user2.id,
-                name: user2.fullName,
-                sign: user2.zodiacSign
-              },
-              matchCode
-            });
-
-            matchedUsers.add(user1.id);
-            matchedUsers.add(user2.id);
-
-            // Update user data in Firebase
-            await updateUserMatch(user1.id, {
-              matchCode,
-              matchedWith: user2.id
-            });
-
-            await updateUserMatch(user2.id, {
-              matchCode,
-              matchedWith: user1.id
-            });
-
-            break;
+            compatiblePairs.push([user1, user2]);
           }
         }
+      }
+      
+      // Sort compatible pairs by some criteria (could be random or based on compatibility score)
+      compatiblePairs.sort(() => Math.random() - 0.5); // Randomize to avoid bias
+      
+      // Create matches from compatible pairs
+      for (const [user1, user2] of compatiblePairs) {
+        if (matchedUsers.has(user1.id) || matchedUsers.has(user2.id)) continue;
+        
+        const matchCode = generateMatchCode(user1.zodiacSign, user2.zodiacSign);
+        
+        matches.push({
+          user1: {
+            id: user1.id,
+            name: user1.fullName,
+            sign: user1.zodiacSign
+          },
+          user2: {
+            id: user2.id,
+            name: user2.fullName,
+            sign: user2.zodiacSign
+          },
+          matchCode
+        });
+
+        matchedUsers.add(user1.id);
+        matchedUsers.add(user2.id);
+
+        // Update user data in Firebase
+        await updateUserMatch(user1.id, {
+          matchCode,
+          matchedWith: user2.id
+        });
+
+        await updateUserMatch(user2.id, {
+          matchCode,
+          matchedWith: user1.id
+        });
       }
 
       // Phase 2: Create groups of 3 for remaining unmatched users
       const remainingUsers = unmatchedUsers.filter(user => !matchedUsers.has(user.id));
       if (remainingUsers.length >= 3) {
-        for (let i = 0; i < remainingUsers.length - 2; i += 3) {
-          if (matchedUsers.has(remainingUsers[i].id)) continue;
-          if (matchedUsers.has(remainingUsers[i + 1].id)) continue;
-          if (matchedUsers.has(remainingUsers[i + 2].id)) continue;
+        // Create groups of 3, but leave some flexibility for the final group
+        const groupsOf3 = Math.floor(remainingUsers.length / 3);
+        const extraUsers = remainingUsers.length % 3;
+        
+        // Create complete groups of 3
+        for (let i = 0; i < groupsOf3; i++) {
+          const startIdx = i * 3;
+          const user1 = remainingUsers[startIdx];
+          const user2 = remainingUsers[startIdx + 1];
+          const user3 = remainingUsers[startIdx + 2];
 
-          const user1 = remainingUsers[i];
-          const user2 = remainingUsers[i + 1];
-          const user3 = remainingUsers[i + 2];
+          if (matchedUsers.has(user1.id) || matchedUsers.has(user2.id) || matchedUsers.has(user3.id)) continue;
 
           const matchCode = generateMatchCode(user1.zodiacSign, user2.zodiacSign, user3.zodiacSign);
           
@@ -121,62 +136,117 @@ const MatchingAlgorithm = () => {
             matchedWith: `${user1.id},${user2.id}`
           });
         }
-      }
-
-      // Phase 3: Handle remaining users (1-2 users left)
-      const finalRemaining = unmatchedUsers.filter(user => !matchedUsers.has(user.id));
-      if (finalRemaining.length > 0) {
-        // If we have 1-2 users left, add them to the last group or create a new group
-        if (finalRemaining.length <= 2 && groups.length > 0) {
-          // Add to the last group
-          const lastGroup = groups[groups.length - 1];
-          const newMatchCode = generateMatchCode(...lastGroup.users.map(u => u.sign), ...finalRemaining.map(u => u.zodiacSign));
+        
+        // Handle extra users (1 or 2 users left)
+        if (extraUsers > 0) {
+          const extraStartIdx = groupsOf3 * 3;
+          const extraUsersList = remainingUsers.slice(extraStartIdx);
           
-          // Update the last group
-          lastGroup.users.push(...finalRemaining.map(user => ({
-            id: user.id,
-            name: user.fullName,
-            sign: user.zodiacSign
-          })));
-          lastGroup.matchCode = newMatchCode;
-
-          // Update all users in the group
-          const allUserIds = lastGroup.users.map(u => u.id);
-          for (const user of finalRemaining) {
-            await updateUserMatch(user.id, {
-              matchCode: newMatchCode,
-              matchedWith: allUserIds.filter(id => id !== user.id).join(',')
-            });
-          }
-
-          // Update existing users in the group
-          for (const user of lastGroup.users.slice(0, -finalRemaining.length)) {
-            await updateUserMatch(user.id, {
-              matchCode: newMatchCode,
-              matchedWith: allUserIds.filter(id => id !== user.id).join(',')
-            });
-          }
-        } else if (finalRemaining.length >= 3) {
-          // Create a new group with remaining users
-          const matchCode = generateMatchCode(...finalRemaining.map(u => u.zodiacSign));
-          
-          groups.push({
-            users: finalRemaining.map(user => ({
+          if (groups.length > 0) {
+            // Add extra users to the last group
+            const lastGroup = groups[groups.length - 1];
+            const newMatchCode = generateMatchCode(...lastGroup.users.map(u => u.sign), ...extraUsersList.map(u => u.zodiacSign));
+            
+            // Update the last group
+            lastGroup.users.push(...extraUsersList.map(user => ({
               id: user.id,
               name: user.fullName,
               sign: user.zodiacSign
-            })),
-            matchCode
-          });
+            })));
+            lastGroup.matchCode = newMatchCode;
 
-          // Update all users in the group
-          const allUserIds = finalRemaining.map(u => u.id);
-          for (const user of finalRemaining) {
-            await updateUserMatch(user.id, {
-              matchCode,
-              matchedWith: allUserIds.filter(id => id !== user.id).join(',')
+            // Update all users in the group
+            const allUserIds = lastGroup.users.map(u => u.id);
+            for (const user of extraUsersList) {
+              await updateUserMatch(user.id, {
+                matchCode: newMatchCode,
+                matchedWith: allUserIds.filter(id => id !== user.id).join(',')
+              });
+            }
+
+            // Update existing users in the group
+            for (const user of lastGroup.users.slice(0, -extraUsersList.length)) {
+              await updateUserMatch(user.id, {
+                matchCode: newMatchCode,
+                matchedWith: allUserIds.filter(id => id !== user.id).join(',')
+              });
+            }
+          } else {
+            // No existing groups, create a new group with extra users
+            const matchCode = generateMatchCode(...extraUsersList.map(u => u.zodiacSign));
+            
+            groups.push({
+              users: extraUsersList.map(user => ({
+                id: user.id,
+                name: user.fullName,
+                sign: user.zodiacSign
+              })),
+              matchCode
             });
+
+            // Update all users in the group
+            const allUserIds = extraUsersList.map(u => u.id);
+            for (const user of extraUsersList) {
+              await updateUserMatch(user.id, {
+                matchCode,
+                matchedWith: allUserIds.filter(id => id !== user.id).join(',')
+              });
+            }
           }
+        }
+      }
+
+      // Phase 3: Handle any remaining users (safety net)
+      const finalRemaining = unmatchedUsers.filter(user => !matchedUsers.has(user.id));
+      if (finalRemaining.length > 0) {
+        console.log(`Safety net: handling ${finalRemaining.length} remaining users`);
+        
+        // Create a group with all remaining users
+        const matchCode = generateMatchCode(...finalRemaining.map(u => u.zodiacSign));
+        
+        groups.push({
+          users: finalRemaining.map(user => ({
+            id: user.id,
+            name: user.fullName,
+            sign: user.zodiacSign
+          })),
+          matchCode
+        });
+
+        // Update all users in the group
+        const allUserIds = finalRemaining.map(u => u.id);
+        for (const user of finalRemaining) {
+          await updateUserMatch(user.id, {
+            matchCode,
+            matchedWith: allUserIds.filter(id => id !== user.id).join(',')
+          });
+        }
+      }
+
+      // Phase 4: Force match any remaining unmatched users (emergency fallback)
+      const stillUnmatched = unmatchedUsers.filter(user => !matchedUsers.has(user.id));
+      if (stillUnmatched.length > 0) {
+        console.log(`Emergency matching ${stillUnmatched.length} remaining users`);
+        
+        // Create a forced group with all remaining users
+        const forcedMatchCode = generateMatchCode(...stillUnmatched.map(u => u.zodiacSign));
+        
+        groups.push({
+          users: stillUnmatched.map(user => ({
+            id: user.id,
+            name: user.fullName,
+            sign: user.zodiacSign
+          })),
+          matchCode: forcedMatchCode
+        });
+
+        // Update all remaining users
+        const allUserIds = stillUnmatched.map(u => u.id);
+        for (const user of stillUnmatched) {
+          await updateUserMatch(user.id, {
+            matchCode: forcedMatchCode,
+            matchedWith: allUserIds.filter(id => id !== user.id).join(',')
+          });
         }
       }
 
@@ -226,6 +296,9 @@ const MatchingAlgorithm = () => {
                   </p>
                   <p className="text-sm opacity-80">
                     Groups Found: {results.groupsFound}
+                  </p>
+                  <p className="text-sm opacity-80">
+                    Total Matched: {results.matchesFound * 2 + results.groups.reduce((sum, group) => sum + group.users.length, 0)}
                   </p>
                 </div>
 
